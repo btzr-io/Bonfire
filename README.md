@@ -1,6 +1,6 @@
 # :fire: Bonfire
 
-A Serverless matchmaking manager.
+A Serverless matchmaking manager for casual multiplayer games.
 
 
 ## Getting Started
