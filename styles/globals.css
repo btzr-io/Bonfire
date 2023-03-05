@@ -13,6 +13,8 @@
   --border-color: #858585;
   --input-bg-color: #fff;
   --input-border: 1px solid var(--border-color);
+
+  --main-color: #1976d2;
 }
 
 :root[data-theme="dark"] {
@@ -26,7 +28,8 @@
 
 html,
 body {
-  font-family: "Inter";
+  font-family: "Jost";
+  font-size: 1.1em;
   max-width: 100vw;
   overflow-x: hidden;
   background: var(--bg-color);
@@ -86,11 +89,11 @@ input:focus {
 }
 
 form input[type="submit"]:focus {
-  box-shadow: 0 0 0 6px var(--bg-color), 0 0 0 9px #c0392b;
+  box-shadow: 0 0 0 6px var(--bg-color), 0 0 0 9px var(--main-color);
 }
 
 form input[type="submit"] {
-  background: #c0392b;
+  background: var(--main-color);
   margin: 16px 0;
   padding: 14px 16px;
   font-weight: bold;
@@ -107,7 +110,7 @@ header {
 }
 
 .login {
-  max-width: 540px;
+  max-width: 560px;
   padding: 16px;
   margin: 16px auto;
 }
@@ -116,6 +119,18 @@ form div p {
   color: var(--label-color);
   padding-top: 32px;
   border-top: 1px solid var(--border-color);
+}
+
+.error {
+  border: 0;
+  padding: 12px;
+  text-align: center;
+  background: rgba(239, 83, 80, 0.1);
+  margin: 32px 0;
+  border: 2px solid rgb(239, 83, 80);
+  color: rgb(239, 83, 80);
+  border-radius: 6px;
+  font-size: smaller;
 }
 
 /* Mobile */

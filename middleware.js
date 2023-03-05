@@ -1,22 +1,31 @@
 import { NextResponse } from "next/server";
+import { getIronSession } from "iron-session/edge";
+import { ironOptions } from "lib/config";
 
 const redirect = (request, redirectUrl) => {
   const url = request.nextUrl.clone();
-  if (url.pathname == redirectUrl) {
-    return NextResponse.next();
-  }
+  if (url.pathname == redirectUrl) return NextResponse.next();
   url.pathname = redirectUrl;
   return NextResponse.redirect(url);
 };
 
-export function middleware(request) {
+export async function middleware(req) {
+  const res = NextResponse.next();
   // Login is hidden
   if (process.env.BONFIRE_LOGING_HIDDEN == "true") {
-    return redirect(request, "/");
+    return redirect(req, "/");
   }
 
+  const session = await getIronSession(req, res, ironOptions);
+  const { user } = session;
+  if (user && user.admin) {
+    if (req.nextUrl.pathname == "/login") {
+      return redirect(req, "/");
+    }
+    return res;
+  }
   // Authentication required
-  return redirect(request, "/login");
+  return redirect(req, "/login");
 }
 
 export const config = {
