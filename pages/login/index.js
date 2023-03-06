@@ -1,42 +1,26 @@
 import Head from "next/head";
-import Image from "next/image";
-import { useState } from "react";
-import { useTheme } from "next-themes";
-import { useRouter } from "next/router";
-
+import Logo from "@/components/logo";
 import { Jost } from "next/font/google";
+import { useRouter } from "next/router";
+import { detectCookies } from "@/lib/cookies";
+import { useState, useEffect } from "react";
+
+import {
+  ERROR_RATE_LIMIT,
+  ERROR_AUTHENTICATION,
+  ERROR_COOKIES_DISABLED,
+} from "@/lib/errors";
+
 const jost = Jost({ subsets: ["latin"] });
 
 const PROJECT_URL = "https://github.com/btzr-io/Bonfire";
-
-const Logo = (props) => {
-  const { resolvedTheme } = useTheme();
-  let src;
-  switch (resolvedTheme) {
-    case "light":
-      src = "logo.svg";
-      break;
-    case "dark":
-      src = "logo_dark.svg";
-      break;
-    default:
-      src =
-        "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-      break;
-  }
-
-  return <Image src={src} alt="Bonfire" width={180} height={36} />;
-};
-
-const RATE_LIMIT_MESSAGE =
-  "You have exceeded the hourly rate limit,  please try again in a few hours or minutes.";
 
 const SIGN_IN_MESSAGE =
   "To continue your journey please log in to your account.";
 
 export default function Home() {
-  var [errorCode, setErrorCode] = useState(0);
-  var [errorMessage, setErrorMessage] = useState(null);
+  var [error, setError] = useState();
+  var [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e) {
@@ -50,12 +34,20 @@ export default function Home() {
     const headers = { "Content-Type": "application/json" };
     const response = await fetch("/api/login", { body, method, headers });
     const responseData = await response.json();
-    if (responseData.error) setErrorMessage(responseData.error);
-    if (!response.ok && response.status) setErrorCode(response.status);
+    if (responseData.error) setError(responseData.error);
     if (responseData && responseData.ok) {
       router.push("/");
     }
   }
+
+  useEffect(() => {
+    if (!detectCookies()) {
+      setError(ERROR_COOKIES_DISABLED);
+    }
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <></>;
 
   return (
     <>
@@ -80,11 +72,10 @@ export default function Home() {
           onSubmit={handleSubmit}
         >
           <div>
-            {errorMessage && <p className="error">{errorMessage}</p>}
-            {errorCode == 429 && <span>{RATE_LIMIT_MESSAGE}</span>}
-            {errorCode != 429 && <span>{SIGN_IN_MESSAGE}</span>}
+            {error && <p className="error">{error.title}</p>}
+            <span>{error ? error.description : SIGN_IN_MESSAGE}</span>
           </div>
-          {errorCode != 429 && (
+          {(!error || error.code == 400) && (
             <>
               <div>
                 <label htmlFor="user">Username</label>

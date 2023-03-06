@@ -13,7 +13,6 @@
   --border-color: #858585;
   --input-bg-color: #fff;
   --input-border: 1px solid var(--border-color);
-
   --main-color: #1976d2;
 }
 
@@ -119,6 +118,7 @@ form div p {
   color: var(--label-color);
   padding-top: 32px;
   border-top: 1px solid var(--border-color);
+  font-size: smaller;
 }
 
 .error {

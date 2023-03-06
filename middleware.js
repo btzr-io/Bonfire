@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getIronSession } from "iron-session/edge";
-import { ironOptions } from "lib/config";
+import getSession from "@/lib/session/middleware";
 
 const redirect = (request, redirectUrl) => {
   const url = request.nextUrl.clone();
@@ -15,14 +14,15 @@ export async function middleware(req) {
   if (process.env.BONFIRE_LOGING_HIDDEN == "true") {
     return redirect(req, "/");
   }
-
-  const session = await getIronSession(req, res, ironOptions);
-  const { user } = session;
-  if (user && user.admin) {
-    if (req.nextUrl.pathname == "/login") {
-      return redirect(req, "/");
+  // Get current session
+  const session = await getSession(req, res);
+  // Validate session
+  if (session && session.user) {
+    const { user } = session;
+    if (user.admin == true) {
+      if (req.nextUrl.pathname == "/login") return redirect(req, "/");
+      return res;
     }
-    return res;
   }
   // Authentication required
   return redirect(req, "/login");
