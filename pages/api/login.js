@@ -3,11 +3,7 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { withSessionRoute } from "@/lib/session/route";
 import { ERROR_RATE_LIMIT, ERROR_AUTHENTICATION } from "@/lib/errors";
 
-import {
-  getIP,
-  applyRateLimit,
-  getRateLimitMiddlewares,
-} from "@/lib/applyRateLimit";
+import { applyRateLimit, getRateLimitMiddlewares } from "@/lib/applyRateLimit";
 
 const middlewares = getRateLimitMiddlewares({
   limit: 5,
@@ -18,16 +14,16 @@ const middlewares = getRateLimitMiddlewares({
 export default withSessionRoute(handler);
 
 async function handler(req, res) {
-  // Only POST requests
+  // Only handle POST requests
   if (req.method != "POST") {
-    res.headers.set("Allow", "POST");
-    return res.status(405);
+    res.setHeader("Allow", "POST");
+    return res.status(405).send({ error: "Method Not Allowed" });
   }
   // Rate limit middleware
   try {
     await applyRateLimit(middlewares, req, res);
   } catch (error) {
-    res.headers.set("Content-Type", "application/json");
+    res.setHeader("Content-Type", "application/json");
     return res.status(ERROR_RATE_LIMIT.code);
   }
   // Validate data
