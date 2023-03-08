@@ -1,6 +1,7 @@
 import assert from "assert";
 import { nanoid } from "nanoid";
 import { pusher } from "@/lib/pusher";
+import apiRoute from "@/lib/apiRoute";
 
 function handler(req, res) {
   try {
