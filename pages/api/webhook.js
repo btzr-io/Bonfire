@@ -11,7 +11,8 @@ async function buffer(readable) {
 
 async function handler(req, res) {
   try {
-    req.rawBody = await buffer(req).toString("utf8");
+    req.rawBody = await buffer(req);
+    req.rawBody = req.rawBody.toString("utf8");
     const webhook = pusher.webhook(req);
     // Validate webhook
     webhook.isValid();
